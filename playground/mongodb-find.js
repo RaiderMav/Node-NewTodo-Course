@@ -21,7 +21,6 @@ MongoClient.connect('mongodb://localhost:27017/NewTodoApp', (err, db) => {
   //   console.log(`Unable to fetch NewTodos. ${err}`)
   // })
   db.collection('Users').find({name: 'Billy Myrick'}).toArray().then((docs) => {
-    console.log(`Users`)
     console.log(JSON.stringify(docs, undefined, 2))
   }, (err) => {
     console.log(`Unable to find User...`)
