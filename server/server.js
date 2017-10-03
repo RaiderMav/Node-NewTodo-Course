@@ -1,8 +1,10 @@
+require('./config/config')
+
 const express = require('express'),
   bodyParser = require('body-parser'),
-  PORT = process.env.PORT || 3000,
   {ObjectID} = require('mongodb'),
-  _ = require('lodash')
+  _ = require('lodash'),
+  PORT = process.env.PORT
 
 var {mongoose} = require('./db/mongoose')
 var {Todo} = require('./models/todo')
