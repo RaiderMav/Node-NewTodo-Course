@@ -11,9 +11,15 @@ var UserSchema = new mongoose.Schema({
     minlength: 1,
     unique: true,
     validate: {
-      validator: validator.isEmail,
-      message: '{VALUE} is not a valid email'
+      validator: (value) => {
+        return validator.isEmail(value)
+      },
+      message: '{VALUE} is not a valid Email'
     }
+    // validate: {
+    //   validator: validator.isEmail,
+    //   message: '{VALUE} is not a valid email'
+    // }
   },
   password: {
     type: String,
@@ -45,6 +51,21 @@ UserSchema.methods.generateAuthToken = function () {
   user.tokens.push({access, token})
   return user.save().then(() => {
     return token
+  })
+}
+UserSchema.statics.findByToken = function (token) {
+  var User = this
+  var decoded
+
+  try {
+    decoded = jwt.verify(token, 'raider123')
+  } catch (e) {
+    return Promise.reject()
+  }
+  return User.findOne({
+    '_id': decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth'
   })
 }
 
