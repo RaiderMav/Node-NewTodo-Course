@@ -4,16 +4,16 @@ const express = require('express'),
   { Todo } = require('./../server/models/todo'),
   request = require('request')
 
-async function go () {
-  const p1 = rp('http://www.stagecenter.net')
-  const p2 = rp('http://example.com/')
-  const res = await Promise.all([p1, p2])
-  const dataPromises = res.map(r => r.json())
-  console.log(dataPromises)
+// async function go () {
+//   const p1 = rp('http://www.stagecenter.net')
+//   const p2 = rp('http://example.com/')
+//   const res = await Promise.all([p1, p2])
+//   const dataPromises = res.map(r => r.json())
+//   console.log(dataPromises)
 
-  console.log(res)
-}
-go()
+//   console.log(res)
+// }
+// go()
 // function breathe (amount) {
 //   return new Promise((resolve, reject) => {
 //     if (amount < 500) {
