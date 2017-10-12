@@ -21,16 +21,25 @@ const {ObjectID} = require('mongodb'),
     _id: userTwoId,
     email: `bubba@gmail.com`,
     password: `userTwoPass`
+    // tokens: [{
+    //   access: `auth`,
+    //   token: jwt.sign({
+    //     _id: userTwoId,
+    //     access: `auth`
+    //   }, `raider123`).toString()
+    // }]
   }],
 
   todos = [{
     text: 'First test todo',
+    _creator: userOneId,
     _id: new ObjectID()
   }, {
     text: 'Second test todo',
     _id: new ObjectID(),
     completed: true,
-    completedAt: 333
+    completedAt: 333,
+    _creator: userTwoId
   }],
 
   populateTodos = (done) => {
