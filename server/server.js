@@ -115,6 +115,7 @@ app.get('/users/me', authenticate, (req, res) => {
 
 app.post('/users/login', (req, res) => {
   let body = _.pick(req.body, ['email', 'password'])
+
   User.findByCredentials(body.email, body.password).then((user) => {
     return user.generateAuthToken().then((token) => {
       res.header('x-auth', token).send(user)
@@ -124,13 +125,13 @@ app.post('/users/login', (req, res) => {
   })
 })
 
-// app.delete('/users/me/token', authenticate, (req, res) => {
-//   req.user.removeToken(req.token).then(() => {
-//     res.status(200).send()
-//   }, () => {
-//     res.status(400).send()
-//   })
-// })
+app.delete('/users/me/token', authenticate, (req, res) => {
+  req.user.removeToken(req.token).then(() => {
+    res.status(200).send()
+  }, () => {
+    res.status(400).send()
+  })
+})
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`)
