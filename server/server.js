@@ -4,12 +4,11 @@ const express = require('express'),
   bodyParser = require('body-parser'),
   { ObjectID } = require('mongodb'),
   _ = require('lodash'),
-  PORT = process.env.PORT
-
-var { mongoose } = require('./db/mongoose'),
+  PORT = process.env.PORT,
+  { mongoose } = require('./db/mongoose'),
   { Todo } = require('./models/todo'),
   { User } = require('./models/user'),
-  {authenticate} = require('./middleware/authenticate')
+  { authenticate } = require('./middleware/authenticate')
 
 let app = express()
 app.use(bodyParser.json())
@@ -17,8 +16,6 @@ app.use(bodyParser.json())
 app.post('/todos', authenticate, (req, res) => {
   let todo = new Todo({
     text: req.body.text,
-    completed: req.body.completed,
-    completedAt: req.body.completedAt,
     _creator: req.user._id
 
   })
@@ -41,12 +38,15 @@ app.get('/todos', authenticate, (req, res) => {
   })
 })
 
-app.get('/todos/:id', (req, res) => {
+app.get('/todos/:id', authenticate, (req, res) => {
   let id = req.params.id
   if (!ObjectID.isValid(id)) {
     return res.status(404).send()
   }
-  Todo.findById(id).then((todo) => {
+  Todo.findOne({
+    _id: id,
+    _creator: req.user._id
+  }).then((todo) => {
     if (!todo) {
       return res.status(404).send()
     }
@@ -56,40 +56,47 @@ app.get('/todos/:id', (req, res) => {
   })
 })
 
-app.delete('/todos/:id', (req, res) => {
+app.delete('/todos/:id', authenticate, (req, res) => {
   let id = req.params.id
   if (!ObjectID.isValid(id)) {
-    return res.status(404).send('ID is not valid')
+    return res.status(404).send()
   }
-  Todo.findByIdAndRemove(id).then((todo) => {
+  Todo.findOneAndRemove({
+    _id: id,
+    _creator: req.user._id
+  }).then((todo) => {
     if (!todo) {
-      return res.status(404).send('Todo not found')
+      return res.status(404).send()
     }
-    res.status(200).send({ todo })
+    res.send({ todo })
   }).catch((e) => {
     res.status(404).send()
   })
 })
 
-app.patch('/todos/:id', (req, res) => {
+app.patch('/todos/:id', authenticate, (req, res) => {
   var id = req.params.id
   var body = _.pick(req.body, ['text', 'completed'])
+
   if (!ObjectID.isValid(id)) {
     return res.status(404).send()
   }
+
   if (_.isBoolean(body.completed) && body.completed) {
     body.completedAt = new Date().getTime()
   } else {
     body.completed = false
     body.completedAt = null
   }
-  Todo.findByIdAndUpdate(id, { $set: body }, { new: true }).then((todo) => {
+
+  Todo.findOneAndUpdate({ _id: id, _creator: req.user._id }, { $set: body }, { new: true }).then((todo) => {
     if (!todo) {
       return res.status(404).send()
     }
+
     res.send({ todo })
   }).catch((e) => {
-    res.status(400).send
+    res.status(400).send()
   })
 })
 
