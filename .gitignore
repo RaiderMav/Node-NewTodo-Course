@@ -2,3 +2,4 @@ node_modules/
 google.html
 playground/async.js
 playground/promise.html
+server/config/config.json
